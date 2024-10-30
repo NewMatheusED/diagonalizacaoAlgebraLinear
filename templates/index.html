@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autovalores e Autovetores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        function generateMatrixInputs() {
+            const size = document.getElementById('matrix-size').value;
+            const container = document.getElementById('matrix-container');
+            container.innerHTML = '';
+
+            for (let i = 0; i < size; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < size; j++) {
+                    const cell = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.name = `m${i}${j}`;
+                    input.required = true;
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                }
+                container.appendChild(row);
+            }
+        }
+
+        window.onload = generateMatrixInputs;
+    </script>
+</head>
+<body>
+    <h1>Calcular Autovalores e Autovetores</h1>
+    <form method="POST">
+        <label for="matrix-size">Tamanho da Matriz:</label>
+        <select id="matrix-size" name="matrix-size" onchange="generateMatrixInputs()">
+            <option value="2">2x2</option>
+            <option value="3">3x3</option>
+        </select>
+        <br><br>
+        <label for="matriz">Matriz:</label>
+        <table id="matrix-container"></table>
+        <button type="submit">Calcular</button>
+    </form>
+    {% if passos %}
+        <h2>Passo a Passo</h2>
+        <p><strong>Matriz original:</strong> \[ {{ passos.matriz_original }} \]</p>
+        <p><strong>λI:</strong> \[ {{ passos.λI }} \]</p>
+        <p><strong>A - λI:</strong> \[ {{ passos.A_minus_λI }} \]</p>
+        <p><strong>Determinante de (A - λI):</strong> \[ {{ passos.det_A_minus_λI }} \]</p>
+        <p><strong>Autovalores:</strong></p>
+        <ul>
+            {% for autovalor in passos.autovalores %}
+                <li>\[ {{ autovalor }} \]</li>
+            {% endfor %}
+        </ul>
+        <p><strong>Autovetores:</strong></p>
+        <ul>
+            {% for autovetor in passos.autovetores %}
+                <li>\[ \begin{pmatrix} {{ autovetor | join(" \\\\ ") }} \end{pmatrix} \]</li>
+            {% endfor %}
+        </ul>
+        {% if passos.diagonalizavel %}
+            <h2>A matriz é diagonalizável</h2>
+            <p><strong>Matriz P (autovetores):</strong> \[ {{ passos.P }} \]</p>
+            <p><strong>Matriz P<sup>-1</sup>:</strong> \[ {{ passos.P_inv }} \]</p>
+            <p><strong>Matriz D (diagonal):</strong> \[ {{ passos.D }} \]</p>
+        {% else %}
+            <h2>A matriz não é diagonalizável</h2>
+            {% if passos.erro %}
+                <p><strong>Erro:</strong> {{ passos.erro }}</p>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</body>
+</html>
