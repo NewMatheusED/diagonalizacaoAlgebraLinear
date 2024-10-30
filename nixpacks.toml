@@ -10,3 +10,6 @@ commands = []
 commands = [
   "python app.py"
 ]
+
+[start]
+cmd = "python app.py"
