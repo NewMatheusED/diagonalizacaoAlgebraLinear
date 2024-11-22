@@ -28,6 +28,26 @@ def format_number(num):
 def format_matrix(matrix):
     return "\\begin{pmatrix}" + " \\\\ ".join([" & ".join(map(format_number, row)) for row in matrix.tolist()]) + "\\end{pmatrix}"
 
+def calcular_matriz_inversa_cofatores(matriz):
+    matriz_sym = Matrix(matriz)
+    det = matriz_sym.det()
+    if det == 0:
+        return None, "A matriz não é invertível porque o determinante é zero."
+    
+    cofatores = matriz_sym.cofactor_matrix()
+    adjunta = cofatores.transpose()
+    inversa = adjunta / det
+    
+    passos = {
+        "matriz_original": format_matrix(matriz_sym),
+        "determinante": format_number(det),
+        "cofatores": format_matrix(cofatores),
+        "adjunta": format_matrix(adjunta),
+        "inversa": format_matrix(inversa)
+    }
+    
+    return inversa, passos
+
 def calcular_autovalores_autovetores_passo_a_passo(matriz):
     λ = symbols('λ')
     matriz_sym = Matrix(matriz)
@@ -46,6 +66,8 @@ def calcular_autovalores_autovetores_passo_a_passo(matriz):
         "autovetores": [],
         "P": None,
         "P_inv": None,
+        "Cofatores": None,
+        "Adjunta": None,
         "D": None,
         "diagonalizavel": False
     }
@@ -65,12 +87,18 @@ def calcular_autovalores_autovetores_passo_a_passo(matriz):
         P = Matrix.hstack(*P)  # Monta a matriz P com autovetores como colunas
         if P.shape[0] == P.shape[1]:  # Verifica se P é quadrada
             try:
-                P_inv = P.inv()
-                D = P_inv * matriz_sym * P
-                passos["P"] = format_matrix(P)
-                passos["P_inv"] = format_matrix(P_inv)
-                passos["D"] = format_matrix(D)
-                passos["diagonalizavel"] = True
+                inversa, passos_inversa = calcular_matriz_inversa_cofatores(P)
+                if inversa is not None:
+                    D = inversa * matriz_sym * P
+                    passos["P"] = format_matrix(P)
+                    passos["P_inv"] = passos_inversa["inversa"]
+                    passos["D"] = format_matrix(D)
+                    passos["diagonalizavel"] = True
+                    passos["Cofatores"] = passos_inversa["cofatores"]
+                    passos["Adjunta"] = passos_inversa["adjunta"]
+                else:
+                    passos["diagonalizavel"] = False
+                    passos["erro"] = passos_inversa
             except Exception as e:
                 passos["diagonalizavel"] = False
                 passos["erro"] = str(e)

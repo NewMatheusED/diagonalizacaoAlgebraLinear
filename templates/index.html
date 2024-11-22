@@ -18,7 +18,7 @@
                 for (let j = 0; j < size; j++) {
                     const cell = document.createElement('td');
                     const input = document.createElement('input');
-                    input.type = 'number';
+                    input.type = 'text';
                     input.name = `m${i}${j}`;
                     input.required = true;
                     cell.appendChild(input);
@@ -67,6 +67,14 @@
             <p><strong>Matriz P (autovetores):</strong> \[ {{ passos.P }} \]</p>
             <p><strong>Matriz P<sup>-1</sup>:</strong> \[ {{ passos.P_inv }} \]</p>
             <p><strong>Matriz D (diagonal):</strong> \[ {{ passos.D }} \]</p>
+            <h2>Passo a Passo da Inversa por Cofatores</h2>
+            <p><strong>Matriz dos Cofatores:</strong> \[ {{ passos.Cofatores }} \]</p>
+            <p><strong>Matriz Adjunta:</strong> \[ {{ passos.Adjunta }} \]</p>
+            <p><strong>Inversa:</strong> \[ {{ passos.P_inv }} \]</p>
+            <h2>Passo a Passo das Contas</h2>
+            <p><strong>Determinante:</strong> \[ \text{det}(A  - \lambda I) = {{ passos.det_A_minus_λI }} \]</p>
+            <p><strong>Inversa:</strong> \[ A^{-1} = \frac{1}{\text{det}(A)} \cdot \text{Adj}(P) \]</p>
+            <p><strong>Diagonal:</strong>\[ D = P^{-1} * A * P \]</p>
         {% else %}
             <h2>A matriz não é diagonalizável</h2>
             {% if passos.erro %}
